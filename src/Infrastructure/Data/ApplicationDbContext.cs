@@ -13,8 +13,9 @@ namespace Infrastructure.Data
         public DbSet<Seller> Sellers { get; set; }
         public DbSet<SysAdmin> SysAdmins { get; set; }
         public DbSet<Product> Products { get; set; }
-        
-        
+        public DbSet<Sale> Sales { get; set; } 
+        public DbSet<SaleLine> SaleLines { get; set; }
+
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -25,10 +26,7 @@ namespace Infrastructure.Data
                 .HasValue<SysAdmin>("Admin")
                 .HasValue<Seller>("Seller");
 
-            //modelBuilder.Entity<Reservation>()
-            //.HasOne(r => r.Product)
-            //.WithMany(p => p.Reservations)
-            //.HasForeignKey(r => r.ProductId);
+            
 
 
             base.OnModelCreating(modelBuilder);
