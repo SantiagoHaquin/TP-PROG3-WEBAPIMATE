@@ -12,9 +12,9 @@ namespace Infrastructure.Data
     {
         public UserRepositoryEf(ApplicationDbContext context) : base(context) { }
 
-        public User GetByUsername(string username)
+        public User GetByUserEmail(string email)
         {
-            return _context.Users.SingleOrDefault(u => u.UserName == username);
+            return _context.Users.SingleOrDefault(u => u.Email == email);
         }
 
         public IEnumerable<User> GetUsersByType(string userType)

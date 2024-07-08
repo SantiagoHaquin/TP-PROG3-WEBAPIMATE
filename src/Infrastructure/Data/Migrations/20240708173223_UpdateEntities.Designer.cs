@@ -2,6 +2,7 @@
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -9,9 +10,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240708173223_UpdateEntities")]
+    partial class UpdateEntities
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.6");
@@ -61,44 +64,6 @@ namespace Infrastructure.Data.Migrations
                     b.HasIndex("SellerId");
 
                     b.ToTable("Products");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Category = "Mates",
-                            Name = "MATE STANLEY",
-                            Price = 35000m,
-                            SellerId = 3,
-                            StockAvailable = 6
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Category = "Termos",
-                            Name = "TERMO LUMILAGRO",
-                            Price = 20000m,
-                            SellerId = 3,
-                            StockAvailable = 1
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Category = "Materas",
-                            Name = "MOCHILA MATERA DE CUERO",
-                            Price = 25000m,
-                            SellerId = 3,
-                            StockAvailable = 5
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Category = "Bombillas",
-                            Name = "BOMBILLA",
-                            Price = 6500m,
-                            SellerId = 3,
-                            StockAvailable = 3
-                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.User", b =>
@@ -136,16 +101,6 @@ namespace Infrastructure.Data.Migrations
                     b.HasBaseType("Domain.Entities.User");
 
                     b.HasDiscriminator().HasValue("Client");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Email = "cueton@example.com",
-                            Password = "Cueton912",
-                            UserName = "Cueton",
-                            UserType = "Client"
-                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.Seller", b =>
@@ -153,16 +108,6 @@ namespace Infrastructure.Data.Migrations
                     b.HasBaseType("Domain.Entities.User");
 
                     b.HasDiscriminator().HasValue("Seller");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 3,
-                            Email = "miguel@example.com",
-                            Password = "Miguelito3520",
-                            UserName = "Miguel",
-                            UserType = "Seller"
-                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.SysAdmin", b =>
@@ -170,16 +115,6 @@ namespace Infrastructure.Data.Migrations
                     b.HasBaseType("Domain.Entities.User");
 
                     b.HasDiscriminator().HasValue("Admin");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 2,
-                            Email = "admin@example.com",
-                            Password = "Admin123",
-                            UserName = "admin",
-                            UserType = "Admin"
-                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.Cart", b =>
