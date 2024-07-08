@@ -14,7 +14,7 @@ namespace Application.Models
         public decimal Price { get; set; }
         public int StockAvailable { get; set; }
         public string Category { get; set; }
-        public int UserId { get; set; }
+        public int SellerId { get; set; }
 
         public static ProductDto Create(Product product)
         {
@@ -25,7 +25,7 @@ namespace Application.Models
                 Price = product.Price,
                 StockAvailable = product.StockAvailable,
                 Category = product.Category,
-                UserId = product.UserId,
+                SellerId = product.SellerId,
             };
         }
 
