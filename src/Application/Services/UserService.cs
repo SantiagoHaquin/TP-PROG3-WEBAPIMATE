@@ -54,6 +54,14 @@ namespace Application.Services
 
         public async Task<User> CreateUser(User user)
         {
+            var users = await _userRepository.ListAsync();
+
+            // Verificar si ya existe un usuario con el mismo correo electrónico
+            if (users.Any(u => u.Email == user.Email))
+            {
+                throw new Exception("A user with the same email already exists.");
+            }
+
             // Crear un nuevo usuario en el repositorio
             return await _userRepository.AddAsync(user);
         }

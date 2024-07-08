@@ -14,6 +14,7 @@ using System.Text;
 using Infrastructure.Services;
 using Azure;
 using Domain.Entities;
+using static Infrastructure.Services.AutenticacionService;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -57,14 +58,17 @@ builder.Services.AddScoped<IProductRepository, ProductRepositoryEf>();
 builder.Services.AddScoped<IUserRepository, UserRepositoryEf>();
 builder.Services.AddScoped<IRepositoryBase<User>, EfRepository<User>>();
 builder.Services.AddScoped<IRepositoryBase<Product>, EfRepository<Product>>();  
-//builder.Services.AddScoped<IRepositoryBase<>, EfRepository<>>();
+builder.Services.AddScoped<IRepositoryBase<Cart>, EfRepository<Cart>>();
 //builder.Services.AddScoped<IRepositoryBase<>, EfRepository<>>();
 
 #endregion
 #region Services
 builder.Services.AddScoped<IProductService, ProductService>();
-builder.Services.AddScoped<IUserService , UserService>();   
+builder.Services.AddScoped<IUserService , UserService>();
+builder.Services.Configure<AutenticacionServiceOptions>(
+    builder.Configuration.GetSection(AutenticacionServiceOptions.AutenticacionService));
 builder.Services.AddScoped<ICustomAuthenticationService, AutenticacionService>();
+builder.Services.AddScoped<ICartService, CartService>();
 
 #endregion
 string connectionString = builder.Configuration["ConnectionStrings:DefaultConnection"]!;

@@ -4,6 +4,8 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <DocumentationFile>C:\Users\PC\Documents\TP-PROG3\TP-PROG3-WEBAPIMATE\src\Web\bin\Debug\net8.0\Web.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

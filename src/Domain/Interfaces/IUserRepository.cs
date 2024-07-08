@@ -9,7 +9,7 @@ namespace Domain.Interfaces
 {
     public interface IUserRepository
     {
-        User GetByUsername(string username);
+        User GetByUserEmail(string email);
         IEnumerable<User> GetUsersByType(string userType);
     }
 }
