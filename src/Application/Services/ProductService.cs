@@ -45,16 +45,26 @@ namespace Application.Services
             var productDto = ProductDto.Create(product);
             return productDto;
         }
+        public async Task<Product> GetProductEntityById(int id)
+        {
+            var product = await _productRepository.GetByIdAsync(id);
 
+            if (product == null)
+            {
+                throw new Exception("Product not found.");
+            }
+
+            return product;
+        }
         public async Task<Product> CreateProduct(ProductRequest productRequest, int sellerId)
         {
             var product = new Product
             {
                 Name = productRequest.Name,
                 Price = productRequest.Price,
-                StockAvailable = productRequest.StockAvailable, 
+                StockAvailable = productRequest.StockAvailable,
                 Category = productRequest.Category,
-                UserId = sellerId
+                SellerId = sellerId
             };
 
             return await _productRepository.AddAsync(product);
@@ -85,7 +95,7 @@ namespace Application.Services
             product.Price = productRequest.Price;
             product.StockAvailable = productRequest.StockAvailable;
             product.Category = productRequest.Category;
-           
+
 
             await _productRepository.UpdateAsync(product);
         }
