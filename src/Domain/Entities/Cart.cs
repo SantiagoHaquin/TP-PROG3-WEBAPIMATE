@@ -8,6 +8,8 @@ namespace Domain.Entities
 {
     public class Cart
     {
-        public ICollection<Product> products = new List<Product>(); 
+        public int Id { get; set; }
+        public int ClientId { get; set; }
+        public ICollection<Product> Products = new List<Product>();
     }
 }
