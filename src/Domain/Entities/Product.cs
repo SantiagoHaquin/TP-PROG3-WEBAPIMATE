@@ -19,5 +19,6 @@ namespace Domain.Entities
 
         [ForeignKey("SellerId")]
         public Seller Seller { get; set; }
+       
     }
 }

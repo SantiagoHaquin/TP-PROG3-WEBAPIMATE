@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Web.Controllers
@@ -19,13 +20,14 @@ namespace Web.Controllers
             _cartService = cartService;
         }
 
-        [HttpPost("[action]")]
+        [HttpPost("[action]/{productId}")]
         [Authorize("Client")]
-        public async Task<ActionResult> AddProductToCart([FromBody] int productId)
+        public async Task<ActionResult> AddProductToCart([FromRoute] int productId)
         {
+            int clientId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? "");
             try
             {
-                var clientId = int.Parse(User.Claims.First(c => c.Type == "sub").Value);
+                
                 await _cartService.AddProductToCart(clientId, productId);
                 return Ok("Product added to cart successfully.");
             }
@@ -39,9 +41,10 @@ namespace Web.Controllers
         [Authorize("Client")]
         public async Task<ActionResult<IEnumerable<ProductDto>>> GetCartProducts()
         {
+            int clientId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? "");
             try
             {
-                var clientId = int.Parse(User.Claims.First(c => c.Type == "sub").Value);
+                
                 var products = await _cartService.GetCartProducts(clientId);
                 return Ok(products);
             }
