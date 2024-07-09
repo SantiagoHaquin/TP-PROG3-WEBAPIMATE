@@ -42,8 +42,7 @@ namespace Application.Services
                 clientCart = new Cart
                 {
                     ClientId = clientId,
-                    Products = new List<Product> { product },
-                    //TotalPrice = product.Price,
+                    Products = new List<Product> { product }
                 };
 
                 await _cartRepository.AddAsync(clientCart);
@@ -55,7 +54,6 @@ namespace Application.Services
             }
 
             product.StockAvailable--;
-            //clientCart.TotalPrice += product.Price;
             await _productRepository.UpdateAsync(product);
         }
 
@@ -72,5 +70,4 @@ namespace Application.Services
             return ProductDto.CreateList(clientCart.Products);
         }
     }
-
 }

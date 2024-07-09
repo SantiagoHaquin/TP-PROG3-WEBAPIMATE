@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Domain.Entities
 {
@@ -10,8 +6,6 @@ namespace Domain.Entities
     {
         public int Id { get; set; }
         public int ClientId { get; set; }
-        public ICollection<Product> Products = new List<Product>();
-
-       
+        public ICollection<Product> Products { get; set; } = new List<Product>();
     }
 }

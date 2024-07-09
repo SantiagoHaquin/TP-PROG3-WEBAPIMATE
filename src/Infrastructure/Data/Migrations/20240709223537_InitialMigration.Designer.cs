@@ -10,14 +10,29 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240708173223_UpdateEntities")]
-    partial class UpdateEntities
+    [Migration("20240709223537_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.6");
+
+            modelBuilder.Entity("CartProduct", b =>
+                {
+                    b.Property<int>("CartId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("CartId", "ProductId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("CartProduct");
+                });
 
             modelBuilder.Entity("Domain.Entities.Cart", b =>
                 {
@@ -33,7 +48,7 @@ namespace Infrastructure.Data.Migrations
                     b.HasIndex("ClientId")
                         .IsUnique();
 
-                    b.ToTable("Cart");
+                    b.ToTable("Carts");
                 });
 
             modelBuilder.Entity("Domain.Entities.Product", b =>
@@ -64,6 +79,44 @@ namespace Infrastructure.Data.Migrations
                     b.HasIndex("SellerId");
 
                     b.ToTable("Products");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Category = "Mates",
+                            Name = "MATE STANLEY",
+                            Price = 35000m,
+                            SellerId = 3,
+                            StockAvailable = 6
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Category = "Termos",
+                            Name = "TERMO LUMILAGRO",
+                            Price = 20000m,
+                            SellerId = 3,
+                            StockAvailable = 1
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Category = "Materas",
+                            Name = "MOCHILA MATERA DE CUERO",
+                            Price = 25000m,
+                            SellerId = 3,
+                            StockAvailable = 5
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Category = "Bombillas",
+                            Name = "BOMBILLA",
+                            Price = 6500m,
+                            SellerId = 3,
+                            StockAvailable = 3
+                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.User", b =>
@@ -101,6 +154,16 @@ namespace Infrastructure.Data.Migrations
                     b.HasBaseType("Domain.Entities.User");
 
                     b.HasDiscriminator().HasValue("Client");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Email = "cueton@example.com",
+                            Password = "Cueton912",
+                            UserName = "Cueton",
+                            UserType = "Client"
+                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.Seller", b =>
@@ -108,6 +171,16 @@ namespace Infrastructure.Data.Migrations
                     b.HasBaseType("Domain.Entities.User");
 
                     b.HasDiscriminator().HasValue("Seller");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 3,
+                            Email = "miguel@example.com",
+                            Password = "Miguelito3520",
+                            UserName = "Miguel",
+                            UserType = "Seller"
+                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.SysAdmin", b =>
@@ -115,6 +188,31 @@ namespace Infrastructure.Data.Migrations
                     b.HasBaseType("Domain.Entities.User");
 
                     b.HasDiscriminator().HasValue("Admin");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 2,
+                            Email = "admin@example.com",
+                            Password = "Admin123",
+                            UserName = "admin",
+                            UserType = "Admin"
+                        });
+                });
+
+            modelBuilder.Entity("CartProduct", b =>
+                {
+                    b.HasOne("Domain.Entities.Cart", null)
+                        .WithMany()
+                        .HasForeignKey("CartId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.Product", null)
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Domain.Entities.Cart", b =>
