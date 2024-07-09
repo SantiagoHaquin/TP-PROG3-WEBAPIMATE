@@ -34,15 +34,16 @@ namespace Application.Services
                 throw new Exception("Product out of stock.");
             }
 
-            var cart = await _cartRepository.ListAsync();
-            var clientCart = cart.FirstOrDefault(c => c.ClientId == clientId);
+            var carts = await _cartRepository.ListAsync();
+            var clientCart = carts.FirstOrDefault(c => c.ClientId == clientId);
 
             if (clientCart == null)
             {
                 clientCart = new Cart
                 {
                     ClientId = clientId,
-                    Products = new List<Product> { product }
+                    Products = new List<Product> { product },
+                    //TotalPrice = product.Price,
                 };
 
                 await _cartRepository.AddAsync(clientCart);
@@ -53,15 +54,15 @@ namespace Application.Services
                 await _cartRepository.UpdateAsync(clientCart);
             }
 
-
             product.StockAvailable--;
+            //clientCart.TotalPrice += product.Price;
             await _productRepository.UpdateAsync(product);
         }
 
         public async Task<IEnumerable<ProductDto>> GetCartProducts(int clientId)
         {
-            var cart = await _cartRepository.ListAsync();
-            var clientCart = cart.FirstOrDefault(c => c.ClientId == clientId);
+            var carts = await _cartRepository.ListAsync();
+            var clientCart = carts.FirstOrDefault(c => c.ClientId == clientId);
 
             if (clientCart == null || !clientCart.Products.Any())
             {
@@ -71,4 +72,5 @@ namespace Application.Services
             return ProductDto.CreateList(clientCart.Products);
         }
     }
+
 }

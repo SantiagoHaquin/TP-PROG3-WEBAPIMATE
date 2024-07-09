@@ -13,6 +13,7 @@ namespace Infrastructure.Data
         public DbSet<Seller> Sellers { get; set; }
         public DbSet<SysAdmin> SysAdmins { get; set; }
         public DbSet<Product> Products { get; set; }
+        public DbSet<Cart> Carts { get; set; }  
         
 
 
@@ -24,6 +25,7 @@ namespace Infrastructure.Data
                 .HasValue<Client>("Client")
                 .HasValue<SysAdmin>("Admin")
                 .HasValue<Seller>("Seller");
+           
 
             modelBuilder.Entity<Client>().HasData(
             new Client 
@@ -64,6 +66,7 @@ namespace Infrastructure.Data
                 new Product { Id = 3, Name = "MOCHILA MATERA DE CUERO", Price = 25000 , StockAvailable = 5, Category = "Materas", SellerId = 3 },
                 new Product { Id = 4, Name = "BOMBILLA", Price = 6500 , StockAvailable = 3, Category = "Bombillas", SellerId = 3 }
             );
+            
 
             base.OnModelCreating(modelBuilder);
         }

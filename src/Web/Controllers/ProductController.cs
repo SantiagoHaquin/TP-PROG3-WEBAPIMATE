@@ -21,12 +21,13 @@ namespace Web.Controllers
 
         [HttpPost("[action]")]
         [Authorize("Admin&Seller")]
-        public ActionResult<Product> CreateProduct([FromBody] ProductRequest productRequest)
+        public async Task<ActionResult<Product>> CreateProduct([FromBody] ProductRequest productRequest)
         {
+            int sellerId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? "");
             try
             {
-                var sellerId = int.Parse(User.Claims.First(c => c.Type == "id").Value);
-                var product = _productService.CreateProduct(productRequest, sellerId);
+                
+                var product = await _productService.CreateProduct(productRequest, sellerId);
                 return Ok(product);
             }
             catch (Exception ex)
@@ -35,11 +36,12 @@ namespace Web.Controllers
             }
         }
 
+
         [HttpPut("[action]/{id}")]
         [Authorize("Admin&Seller")]
         public async Task<ActionResult> UpdateProduct(int id, [FromBody] ProductRequest productRequest)
         {
-            int sellerId = int.Parse(User.Claims.First(c => c.Type == "sub").Value);
+            int sellerId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? "");
 
 
             try
@@ -63,7 +65,7 @@ namespace Web.Controllers
         [Authorize("Admin&Seller")]
         public async Task<ActionResult> DeleteProduct(int id)
         {
-            int sellerId = int.Parse(User.Claims.First(c => c.Type == "sub").Value);
+            int sellerId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? "");
 
 
             try
