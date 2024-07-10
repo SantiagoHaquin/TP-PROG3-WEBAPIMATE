@@ -1,57 +1,59 @@
 ﻿using Application.Interfaces;
 using Application.Models;
 using Application.Models.Requests;
-using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Web.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize("Admin")] //politca 
+    [Authorize("Admin")]
     public class UserController : ControllerBase
     {
         private readonly IUserService _sysAdminService;
-        public UserController(IUserService sysAdminService) 
-        { 
+
+        public UserController(IUserService sysAdminService)
+        {
             _sysAdminService = sysAdminService;
         }
-       
-        [HttpPost("[action]")]
-        public ActionResult CreateUser([FromBody] UserRequest user)
-        {
-            try 
-            {
-                 _sysAdminService.CreateUser(user);
-               return NoContent();
-            }catch (Exception ex) 
-            {
-               return NotFound(ex.Message);
-            }
-        
-        }
 
-        [HttpPut("{id}")]
-        public ActionResult UpadateUser([FromRoute] int id, [FromBody] UserRequest user)
+        [HttpPost("[action]")]
+        public async Task<ActionResult> CreateUser([FromBody] UserRequest user)
         {
             try
             {
-                  _sysAdminService.UpdateUser(id , user);
+                await _sysAdminService.CreateUser(user);
                 return NoContent();
-            }catch (Exception ex) 
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult> UpdateUser([FromRoute] int id, [FromBody] UserRequest user)
+        {
+            try
+            {
+                await _sysAdminService.UpdateUser(id, user);
+                return NoContent();
+            }
+            catch (Exception ex)
             {
                 return NotFound(ex.Message);
             }
         }
 
         [HttpDelete("{id}")]
-        public ActionResult DeleteUser([FromRoute] int id)
+        public async Task<ActionResult> DeleteUser([FromRoute] int id)
         {
             try
             {
-                 _sysAdminService.DeleteUser(id);
+                await _sysAdminService.DeleteUser(id);
                 return NoContent();
             }
             catch (Exception ex)
@@ -61,17 +63,23 @@ namespace Web.Controllers
         }
 
         [HttpGet("{id}")]
-        public ActionResult<UserDto> GetUserById(int id)
+        public async Task<ActionResult<UserDto>> GetUserById(int id)
         {
-
-            var user =  _sysAdminService.GetUserById(id);
-            return Ok(user);
+            try
+            {
+                var user = await _sysAdminService.GetUserById(id);
+                return Ok(user);
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
 
         [HttpGet("[action]")]
-        public ActionResult<IEnumerable<UserDto>> GetUsersAll() 
+        public async Task<ActionResult<IEnumerable<UserDto>>> GetUsersAll()
         {
-            var userAll =  _sysAdminService.GetAllUsers();
+            var userAll = await _sysAdminService.GetAllUsers();
             return Ok(userAll);
         }
     }
