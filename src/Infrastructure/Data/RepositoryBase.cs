@@ -22,9 +22,17 @@ namespace Infrastructure.Data
             return await _dbContext.Set<T>().FindAsync(new object[] { id }, cancellationToken: cancellationToken);
         }
 
-        public virtual async Task<List<T>> ListAsync(CancellationToken cancellationToken = default)
+        public virtual async Task<List<T>> ListAsync(Func<IQueryable<T>, IQueryable<T>>? include = null, CancellationToken cancellationToken = default)
         {
-            return await _dbContext.Set<T>().ToListAsync(cancellationToken);
+            IQueryable<T> query = _dbContext.Set<T>();
+
+            if (include != null)
+            {
+                query = include(query);
+            }
+
+            return await query.ToListAsync(cancellationToken);
+           
         }
 
         public virtual async Task<T> AddAsync(T entity, CancellationToken cancellationToken = default)

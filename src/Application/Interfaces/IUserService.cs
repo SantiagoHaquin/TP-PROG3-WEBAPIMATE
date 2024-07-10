@@ -14,9 +14,9 @@ namespace Application.Interfaces
         
         Task<IEnumerable<UserDto>> GetAllUsers();
         Task<UserDto> GetUserById(int id);
-        Task<User> CreateUser(User user);
+        Task<User> CreateUser(UserRequest user);
         Task DeleteUser(int id);
-        Task UpdateUser(int id, User updatedUser);
+        Task UpdateUser(int id, UserRequest updatedUser);
 
     
     }

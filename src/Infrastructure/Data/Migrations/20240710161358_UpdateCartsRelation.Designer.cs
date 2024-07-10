@@ -2,6 +2,7 @@
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -9,9 +10,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240710161358_UpdateCartsRelation")]
+    partial class UpdateCartsRelation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.6");
@@ -184,7 +187,7 @@ namespace Infrastructure.Data.Migrations
                 {
                     b.HasBaseType("Domain.Entities.User");
 
-                    b.HasDiscriminator().HasValue("SysAdmin");
+                    b.HasDiscriminator().HasValue("Admin");
 
                     b.HasData(
                         new
@@ -193,7 +196,7 @@ namespace Infrastructure.Data.Migrations
                             Email = "admin@example.com",
                             Password = "Admin123",
                             UserName = "admin",
-                            UserType = "SysAdmin"
+                            UserType = "Admin"
                         });
                 });
 

@@ -19,7 +19,7 @@ namespace Infrastructure.Data
             modelBuilder.Entity<User>()
                 .HasDiscriminator<string>("UserType")
                 .HasValue<Client>("Client")
-                .HasValue<SysAdmin>("Admin")
+                .HasValue<SysAdmin>("SysAdmin")
                 .HasValue<Seller>("Seller");
 
             modelBuilder.Entity<Client>().HasData(
@@ -39,7 +39,7 @@ namespace Infrastructure.Data
                     Id = 2,
                     UserName = "admin",
                     Email = "admin@example.com",
-                    UserType = "Admin",
+                    UserType = "SysAdmin",
                     Password = "Admin123"
                 }
             );
@@ -63,13 +63,9 @@ namespace Infrastructure.Data
             );
 
             modelBuilder.Entity<Cart>()
-                .HasMany(c => c.Products)
-                .WithMany(p => p.Carts)
-                .UsingEntity<Dictionary<string, object>>(
-                    "CartProduct",
-                    j => j.HasOne<Product>().WithMany().HasForeignKey("ProductId"),
-                    j => j.HasOne<Cart>().WithMany().HasForeignKey("CartId")
-                );
+            .HasMany(c => c.Products)
+            .WithMany(p => p.Carts)
+            .UsingEntity(j => j.ToTable("CartProducts"));
 
             base.OnModelCreating(modelBuilder);
         }

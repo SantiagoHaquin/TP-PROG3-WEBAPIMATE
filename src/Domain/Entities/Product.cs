@@ -13,7 +13,7 @@ namespace Domain.Entities
         public int StockAvailable { get; set; }
         public string Category { get; set; }
         public int SellerId { get; set; }
-
+        
         [ForeignKey("SellerId")]
         public Seller Seller { get; set; }
 

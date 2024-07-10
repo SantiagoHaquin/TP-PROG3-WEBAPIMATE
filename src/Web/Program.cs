@@ -26,7 +26,7 @@ builder.Services.AddEndpointsApiExplorer();
 //builder.Services.AddScoped<CartService>(); // Agrega el servicio del carrito
 builder.Services.AddSwaggerGen(setupAction =>
 {
-    setupAction.AddSecurityDefinition("ConsultaAlumnosApiBearerAuth", new OpenApiSecurityScheme() //Esto va a permitir usar swagger con el token.
+    setupAction.AddSecurityDefinition("MatesApiBearerAuth", new OpenApiSecurityScheme() //Esto va a permitir usar swagger con el token.
     {
         Type = SecuritySchemeType.Http,
         Scheme = "Bearer",
@@ -41,7 +41,7 @@ builder.Services.AddSwaggerGen(setupAction =>
                 Reference = new OpenApiReference
                 {
                     Type = ReferenceType.SecurityScheme,
-                    Id = "ConsultaAlumnosApiBearerAuth" } //Tiene que coincidir con el id seteado arriba en la definición
+                    Id = "MatesApiBearerAuth" } //Tiene que coincidir con el id seteado arriba en la definición
                 }, new List<string>() }
     });
 
@@ -98,9 +98,9 @@ builder.Services.AddAuthentication("Bearer") //"Bearer" es el tipo de auntentica
 // Configuración de políticas de autorización
 builder.Services.AddAuthorization(options => //Agregamos políticas para la autorización de los respectivos ENDPOINTS.
 {
-    options.AddPolicy("Admin", policy => policy.RequireClaim("usertype", "Admin"));
+    options.AddPolicy("Admin", policy => policy.RequireClaim("usertype", "SysAdmin"));
     options.AddPolicy("Client", policy => policy.RequireClaim("usertype", "Client"));
-    options.AddPolicy("Admin&Seller", policy => policy.RequireClaim("usertype", "Admin", "Seller"));
+    options.AddPolicy("Admin&Seller", policy => policy.RequireClaim("usertype", "SysAdmin", "Seller"));
 });
 
 var app = builder.Build();

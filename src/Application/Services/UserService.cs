@@ -1,5 +1,6 @@
 ﻿using Application.Interfaces;
 using Application.Models;
+using Application.Models.Requests;
 using Domain.Entities;
 using Domain.Interfaces;
 using System;
@@ -52,18 +53,56 @@ namespace Application.Services
             return userDto;
         }
 
-        public async Task<User> CreateUser(User user)
+        public async Task<User> CreateUser(UserRequest user)
         {
             var users = await _userRepository.ListAsync();
 
             // Verificar si ya existe un usuario con el mismo correo electrónico
-            if (users.Any(u => u.Email == user.Email))
+            if (users.Any(u => u.Email == user.Email) || users.Any(u => u.UserName == user.UserName))
             {
-                throw new Exception("A user with the same email already exists.");
+                throw new Exception("A user with the same email or username already exists.");
             }
+            User newUser;
 
-            // Crear un nuevo usuario en el repositorio
-            return await _userRepository.AddAsync(user);
+            // Crear una instancia concreta basada en el tipo de usuario
+            if (user.UserType == "Client")
+            {
+                newUser = new Client
+                {
+                    UserName = user.UserName,
+                    Email = user.Email,
+                    Password= user.Password,
+                    UserType = user.UserType,
+                  
+                };
+            }
+            else if (user.UserType == "Seller")
+            {
+                newUser = new Seller
+                {
+                    UserName = user.UserName,
+                    Email = user.Email,
+                    Password = user.Password,
+                    UserType = user.UserType,
+                    
+                };
+            }
+            else if(user.UserType == "SysAdmin") 
+            {
+                newUser = new SysAdmin
+                {
+                    UserName = user.UserName,
+                    Email = user.Email,
+                    Password = user.Password,
+                    UserType = user.UserType,
+
+                };
+            }
+            else
+            {
+                throw new Exception("Invalid user type.");
+            }
+            return await _userRepository.AddAsync(newUser);
         }
 
         public async Task DeleteUser(int id)
@@ -81,7 +120,7 @@ namespace Application.Services
             await _userRepository.DeleteAsync(user);
         }
 
-        public async Task UpdateUser(int id, User updatedUser)
+        public async Task UpdateUser(int id, UserRequest updatedUser)
         {
             // Obtener el usuario desde el repositorio
             var user = await _userRepository.GetByIdAsync(id);

@@ -28,7 +28,7 @@ namespace Domain.Interfaces
         /// A task that represents the asynchronous operation.
         /// The task result contains a <see cref="List{T}" /> that contains elements from the input sequence.
         /// </returns>
-        Task<List<T>> ListAsync(CancellationToken cancellationToken = default);
+        Task<List<T>> ListAsync(Func<IQueryable<T>, IQueryable<T>>? include = null, CancellationToken cancellationToken = default);
 
 
         /// <summary>
