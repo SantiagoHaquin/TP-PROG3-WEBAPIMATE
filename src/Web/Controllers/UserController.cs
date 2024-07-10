@@ -1,5 +1,6 @@
 ﻿using Application.Interfaces;
 using Application.Models;
+using Application.Models.Requests;
 using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -19,11 +20,11 @@ namespace Web.Controllers
         }
        
         [HttpPost("[action]")]
-        public ActionResult CreateUser([FromBody] User user)
+        public ActionResult CreateUser([FromBody] UserRequest user)
         {
             try 
             {
-                _sysAdminService.CreateUser(user);
+                 _sysAdminService.CreateUser(user);
                return NoContent();
             }catch (Exception ex) 
             {
@@ -33,11 +34,11 @@ namespace Web.Controllers
         }
 
         [HttpPut("{id}")]
-        public ActionResult UpadateUser([FromRoute] int id, [FromBody] User user)
+        public ActionResult UpadateUser([FromRoute] int id, [FromBody] UserRequest user)
         {
             try
             {
-                _sysAdminService.UpdateUser(id , user);
+                  _sysAdminService.UpdateUser(id , user);
                 return NoContent();
             }catch (Exception ex) 
             {
@@ -50,7 +51,7 @@ namespace Web.Controllers
         {
             try
             {
-                _sysAdminService.DeleteUser(id);
+                 _sysAdminService.DeleteUser(id);
                 return NoContent();
             }
             catch (Exception ex)
@@ -63,14 +64,14 @@ namespace Web.Controllers
         public ActionResult<UserDto> GetUserById(int id)
         {
 
-            var user = _sysAdminService.GetUserById(id);
+            var user =  _sysAdminService.GetUserById(id);
             return Ok(user);
         }
 
         [HttpGet("[action]")]
         public ActionResult<IEnumerable<UserDto>> GetUsersAll() 
         {
-            var userAll = _sysAdminService.GetAllUsers();
+            var userAll =  _sysAdminService.GetAllUsers();
             return Ok(userAll);
         }
     }

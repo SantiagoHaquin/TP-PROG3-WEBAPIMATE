@@ -2,6 +2,7 @@
 using Application.Models;
 using Domain.Entities;
 using Domain.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,8 +35,9 @@ namespace Application.Services
                 throw new Exception("Product out of stock.");
             }
 
-            var carts = await _cartRepository.ListAsync();
-            var clientCart = carts.FirstOrDefault(c => c.ClientId == clientId);
+            var clientCart = (await _cartRepository.ListAsync(
+                query => query.Include(c => c.Products)))
+                .FirstOrDefault(c => c.ClientId == clientId);
 
             if (clientCart == null)
             {
@@ -49,18 +51,24 @@ namespace Application.Services
             }
             else
             {
-                clientCart.Products.Add(product);
-                await _cartRepository.UpdateAsync(clientCart);
+                // Verifica que el producto no esté ya en el carrito
+                if (!clientCart.Products.Any(p => p.Id == productId))
+                {
+                    clientCart.Products.Add(product);
+                    await _cartRepository.UpdateAsync(clientCart);
+                }
             }
 
             product.StockAvailable--;
+          
             await _productRepository.UpdateAsync(product);
         }
 
         public async Task<IEnumerable<ProductDto>> GetCartProducts(int clientId)
         {
-            var carts = await _cartRepository.ListAsync();
-            var clientCart = carts.FirstOrDefault(c => c.ClientId == clientId);
+            var clientCart = (await _cartRepository.ListAsync(
+                query => query.Include(c => c.Products)))
+                .FirstOrDefault(c => c.ClientId == clientId);
 
             if (clientCart == null || !clientCart.Products.Any())
             {
@@ -69,5 +77,6 @@ namespace Application.Services
 
             return ProductDto.CreateList(clientCart.Products);
         }
+
     }
 }
