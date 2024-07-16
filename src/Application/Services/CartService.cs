@@ -14,11 +14,14 @@ namespace Application.Services
     {
         private readonly IRepositoryBase<Cart> _cartRepository;
         private readonly IRepositoryBase<Product> _productRepository;
-
-        public CartService(IRepositoryBase<Cart> cartRepository, IRepositoryBase<Product> productRepository)
+        private readonly IRepositoryBase<Order> _orderRepository;
+        private readonly IRepositoryBase<User> _userRepository;
+        public CartService(IRepositoryBase<Cart> cartRepository, IRepositoryBase<Product> productRepository, IRepositoryBase<Order> orderRepository, IRepositoryBase<User> userRepository)
         {
             _cartRepository = cartRepository;
             _productRepository = productRepository;
+            _orderRepository = orderRepository;
+            _userRepository = userRepository;       
         }
 
         public async Task AddProductToCart(int clientId, int productId)
@@ -78,5 +81,33 @@ namespace Application.Services
             return ProductDto.CreateList(clientCart.Products);
         }
 
+        public async Task PurchaseCart(int clientId)
+        {
+            var clientCart = (await _cartRepository.ListAsync(
+                query => query.Include(c => c.Products)))
+                .FirstOrDefault(c => c.ClientId == clientId);
+            if(clientCart == null || !clientCart.Products.Any())
+            {
+                throw new Exception("CART IS EMPTY");
+            }
+            var client = await _userRepository.GetByIdAsync(clientId);
+            var order = clientCart.Products.Select(product => new Order
+            {
+                ProductId = product.Id,
+                ClientId = clientId,
+                SellerId = product.SellerId,
+                DateTime = DateTime.UtcNow,
+                EmailClient = client.Email,
+
+            }).ToList();
+            
+            foreach(var item in order)
+            {
+                await _orderRepository.AddAsync(item);
+            }
+
+            clientCart.Products.Clear();
+            await _cartRepository.UpdateAsync(clientCart);   
+        }
     }
 }

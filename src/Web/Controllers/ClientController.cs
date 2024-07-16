@@ -11,6 +11,7 @@ namespace Web.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize("Client")]
     public class ClientController : ControllerBase
     {
         private readonly ICartService _cartService;
@@ -21,7 +22,7 @@ namespace Web.Controllers
         }
 
         [HttpPost("[action]/{productId}")]
-        [Authorize("Client")]
+        
         public async Task<ActionResult> AddProductToCart([FromRoute] int productId)
         {
             int clientId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? "");
@@ -33,12 +34,12 @@ namespace Web.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return NotFound(ex.Message);
             }
         }
 
         [HttpGet("[action]")]
-        [Authorize("Client")]
+        
         public async Task<ActionResult<IEnumerable<ProductDto>>> GetCartProducts()
         {
             int clientId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? "");
@@ -47,6 +48,22 @@ namespace Web.Controllers
                 
                 var products = await _cartService.GetCartProducts(clientId);
                 return Ok(products);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        
+        [HttpPost("[action]")]
+        public async Task<ActionResult> PurchaseCart()
+        {
+            int clientId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? "");
+            try
+            {
+                await _cartService.PurchaseCart(clientId);
+                return Ok("Purchase successful.");
             }
             catch (Exception ex)
             {
