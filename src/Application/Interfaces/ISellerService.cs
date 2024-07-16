@@ -11,6 +11,8 @@ namespace Application.Interfaces
     public interface ISellerService
     {
         Task<IEnumerable<ProductDto>> GetSellerProducts(int sellerId);
-        Task<IEnumerable<Order>> GetSellerSales(int sellerId);
+        Task<IEnumerable<OrderDto>> GetSellerSales(int sellerId);
+
+
     }
 }
