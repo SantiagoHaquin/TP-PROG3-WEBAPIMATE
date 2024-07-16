@@ -1,8 +1,5 @@
-
 using Microsoft.EntityFrameworkCore;
-
-using Infrastructure.Data; // Asegúrate de ajustar el espacio de nombres según la ubicación real de tu DbContext
-
+using Infrastructure.Data; 
 using Microsoft.Data.Sqlite;
 using Application.Interfaces;
 using Application.Services;
@@ -23,7 +20,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
-//builder.Services.AddScoped<CartService>(); // Agrega el servicio del carrito
 builder.Services.AddSwaggerGen(setupAction =>
 {
     setupAction.AddSecurityDefinition("MatesApiBearerAuth", new OpenApiSecurityScheme() //Esto va a permitir usar swagger con el token.
@@ -57,25 +53,26 @@ builder.Services.AddSwaggerGen(setupAction =>
 builder.Services.AddScoped<IProductRepository, ProductRepositoryEf>();
 builder.Services.AddScoped<IUserRepository, UserRepositoryEf>();
 builder.Services.AddScoped<IRepositoryBase<User>, EfRepository<User>>();
-builder.Services.AddScoped<IRepositoryBase<Product>, EfRepository<Product>>();  
+builder.Services.AddScoped<IRepositoryBase<Product>, EfRepository<Product>>();
 builder.Services.AddScoped<IRepositoryBase<Cart>, EfRepository<Cart>>();
-//builder.Services.AddScoped<IRepositoryBase<>, EfRepository<>>();
+builder.Services.AddScoped<IRepositoryBase<Order>, EfRepository<Order>>();
 
 #endregion
 #region Services
 builder.Services.AddScoped<IProductService, ProductService>();
-builder.Services.AddScoped<IUserService , UserService>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.Configure<AutenticacionServiceOptions>(
     builder.Configuration.GetSection(AutenticacionServiceOptions.AutenticacionService));
 builder.Services.AddScoped<ICustomAuthenticationService, AutenticacionService>();
 builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddScoped<ISellerService, SellerService>();
 
 #endregion
 string connectionString = builder.Configuration["ConnectionStrings:DefaultConnection"]!;
 var connection = new SqliteConnection(connectionString);
 connection.Open();
 
-using (var command = connection.CreateCommand()) 
+using (var command = connection.CreateCommand())
 {
     command.CommandText = "PRAGMA journal_mode = DELETE;";
     command.ExecuteNonQuery();
@@ -100,6 +97,7 @@ builder.Services.AddAuthorization(options => //Agregamos políticas para la autor
 {
     options.AddPolicy("Admin", policy => policy.RequireClaim("usertype", "SysAdmin"));
     options.AddPolicy("Client", policy => policy.RequireClaim("usertype", "Client"));
+    options.AddPolicy("Seller", policy => policy.RequireClaim("usertype", "Seller"));
     options.AddPolicy("Admin&Seller", policy => policy.RequireClaim("usertype", "SysAdmin", "Seller"));
 });
 
