@@ -28,9 +28,17 @@ namespace Web.Controllers
         [HttpPost("authenticate")] //Vamos a usar un POST ya que debemos enviar los datos para hacer el login
         public ActionResult<string> Autenticar(AuthenticationRequest authenticationRequest) //Enviamos como parámetro la clase que creamos arriba
         {
-            string token = _customAuthenticationService.Autenticar(authenticationRequest); //Lo primero que hacemos es llamar a una función que valide los parámetros que enviamos.
-
-            return Ok(token);
+            //Lo primero que hacemos es llamar a una función que valide los parámetros que enviamos.
+            try
+            {
+                string token = _customAuthenticationService.Autenticar(authenticationRequest);
+                return Ok(token);
+            }
+            catch(Exception ex) 
+            {
+                return NotFound(ex.Message);
+            }
+            
         }
     }
 }

@@ -11,6 +11,6 @@ namespace Application.Interfaces
     {
         Task AddProductToCart(int clientId, int productId);
         Task<IEnumerable<ProductDto>> GetCartProducts(int clientId);
-
+        Task PurchaseCart(int clientId);
     }
 }
