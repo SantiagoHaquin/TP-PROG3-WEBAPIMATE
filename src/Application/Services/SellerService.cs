@@ -28,11 +28,12 @@ namespace Application.Services
             return productDtos;
         }
 
-        public async Task<IEnumerable<Order>> GetSellerSales(int sellerId)
+        public async Task<IEnumerable<OrderDto>> GetSellerSales(int sellerId)
         {
             var orders = await _orderRepository.ListAsync();
             var sellerOrders = orders.Where(o => o.SellerId == sellerId).ToList();
-            return sellerOrders;
+            var ordersDtos = OrderDto.CreateList(orders);
+            return ordersDtos;
         }
     }
 }

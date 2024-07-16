@@ -61,10 +61,6 @@ namespace Application.Services
                     await _cartRepository.UpdateAsync(clientCart);
                 }
             }
-
-            product.StockAvailable--;
-          
-            await _productRepository.UpdateAsync(product);
         }
 
         public async Task<IEnumerable<ProductDto>> GetCartProducts(int clientId)
@@ -86,28 +82,40 @@ namespace Application.Services
             var clientCart = (await _cartRepository.ListAsync(
                 query => query.Include(c => c.Products)))
                 .FirstOrDefault(c => c.ClientId == clientId);
-            if(clientCart == null || !clientCart.Products.Any())
-            {
-                throw new Exception("CART IS EMPTY");
-            }
-            var client = await _userRepository.GetByIdAsync(clientId);
-            var order = clientCart.Products.Select(product => new Order
-            {
-                ProductId = product.Id,
-                ClientId = clientId,
-                SellerId = product.SellerId,
-                DateTime = DateTime.UtcNow,
-                EmailClient = client.Email,
 
-            }).ToList();
-            
-            foreach(var item in order)
+            if (clientCart == null || !clientCart.Products.Any())
             {
-                await _orderRepository.AddAsync(item);
+                throw new Exception("Cart is empty");
+            }
+
+            var client = await _userRepository.GetByIdAsync(clientId);
+
+            foreach (var product in clientCart.Products)
+            {
+                var productToUpdate = await _productRepository.GetByIdAsync(product.Id);
+
+                if (productToUpdate.StockAvailable <= 0)
+                {
+                    throw new Exception($"Product {productToUpdate.Name} is out of stock.");
+                }
+
+                productToUpdate.StockAvailable--;
+                await _productRepository.UpdateAsync(productToUpdate);
+
+                var order = new Order
+                {
+                    ProductId = product.Id,
+                    ClientId = clientId,
+                    SellerId = product.SellerId,
+                    DateTime = DateTime.UtcNow,
+                    EmailClient = client.Email,
+                };
+
+                await _orderRepository.AddAsync(order);
             }
 
             clientCart.Products.Clear();
-            await _cartRepository.UpdateAsync(clientCart);   
+            await _cartRepository.UpdateAsync(clientCart);
         }
     }
 }

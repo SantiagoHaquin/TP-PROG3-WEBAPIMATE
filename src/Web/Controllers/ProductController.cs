@@ -67,13 +67,12 @@ namespace Web.Controllers
         {
             int sellerId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? "");
 
-
             try
             {
                 var product = await _productService.GetProductEntityById(id);
                 if (product.SellerId != sellerId)
                 {
-                    return Forbid("You do not have permission to delete this product");
+                    return StatusCode(403, new { message = "You do not have permission to delete this product" });
                 }
 
                 await _productService.DeleteProduct(id);
@@ -84,6 +83,8 @@ namespace Web.Controllers
                 return NotFound(ex.Message);
             }
         }
+
+
 
         [HttpGet("[action]")]
         public async Task<ActionResult<IEnumerable<ProductDto>>> GetAllProducts()
