@@ -21,16 +21,13 @@ namespace Application.Services
 
         public async Task<IEnumerable<UserDto>> GetAllUsers()
         {
-            // Obtener la lista de usuarios desde el repositorio
             var users = await _userRepository.ListAsync();
 
-            // Verificar si la lista de usuarios es nula o vacía
             if (users == null || !users.Any())
             {
-                return new List<UserDto>(); // Devolver una lista vacía
+                return new List<UserDto>();
             }
 
-            // Convertir cada usuario en un UserDto utilizando el método estático Create
             var userDtos = UserDto.CreateList(users);
 
             return userDtos;
@@ -38,16 +35,13 @@ namespace Application.Services
 
         public async Task<UserDto> GetUserById(int id)
         {
-            // Obtener el usuario desde el repositorio
             var user = await _userRepository.GetByIdAsync(id);
 
-            // Verificar si el usuario es nulo
             if (user == null)
             {
-                throw new Exception("User not found."); // Lanzar una excepción si el usuario no se encuentra
+                throw new Exception("User not found."); 
             }
 
-            // Convertir la entidad User a UserDto utilizando el método estático Create
             var userDto = UserDto.Create(user);
 
             return userDto;
@@ -57,14 +51,12 @@ namespace Application.Services
         {
             var users = await _userRepository.ListAsync();
 
-            // Verificar si ya existe un usuario con el mismo correo electrónico
             if (users.Any(u => u.Email == user.Email) || users.Any(u => u.UserName == user.UserName))
             {
                 throw new Exception("A user with the same email or username already exists.");
             }
             User newUser;
 
-            // Crear una instancia concreta basada en el tipo de usuario
             if (user.UserType == "Client")
             {
                 newUser = new Client
@@ -107,36 +99,29 @@ namespace Application.Services
 
         public async Task DeleteUser(int id)
         {
-            // Obtener el usuario desde el repositorio
             var user = await _userRepository.GetByIdAsync(id);
 
-            // Verificar si el usuario existe
             if (user == null)
             {
-                throw new Exception("User not found."); // Lanzar una excepción si el usuario no se encuentra
+                throw new Exception("User not found."); 
             }
 
-            // Eliminar el usuario del repositorio
             await _userRepository.DeleteAsync(user);
         }
 
         public async Task UpdateUser(int id, UserRequest updatedUser)
         {
-            // Obtener el usuario desde el repositorio
             var user = await _userRepository.GetByIdAsync(id);
 
-            // Verificar si el usuario existe
             if (user == null)
             {
-                throw new Exception("User not found."); // Lanzar una excepción si el usuario no se encuentra
+                throw new Exception("User not found."); 
             }
 
-            // Actualizar las propiedades del usuario con los datos del usuario actualizado
             user.UserName = updatedUser.UserName;
             user.Email = updatedUser.Email;
             user.UserType = updatedUser.UserType;
 
-            // Guardar los cambios en el repositorio
             await _userRepository.UpdateAsync(user);
         }
     }

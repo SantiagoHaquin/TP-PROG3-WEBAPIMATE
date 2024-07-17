@@ -14,7 +14,6 @@ namespace Application.Models
         public string? Email { get; set; }
         public string? UserType { get; set; }
 
-        // Método estático para convertir una entidad User a UserDto
         public static UserDto Create(User user)
         {
             return new UserDto
@@ -26,7 +25,6 @@ namespace Application.Models
             };
         }
 
-        // Método estático para convertir una lista de entidades User a una lista de UserDto
         public static List<UserDto> CreateList(IEnumerable<User> users)
         {
             return users.Select(Create).ToList();
