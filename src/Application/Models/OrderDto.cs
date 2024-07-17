@@ -12,16 +12,18 @@ namespace Application.Models
         public int Id { get; set; }
         public DateTime DateTime { get; set; }
         public string EmailClient { get; set; }
+        public int Quantity { get; set; }
+        public string ProductName { get; set; }
 
         public static OrderDto Create(Order order)
         {
             return new OrderDto { 
-                Id = order.Id, 
+                Id = order.Id,
+                ProductName = order.ProductName,
                 DateTime = order.DateTime, 
-                EmailClient = order.EmailClient  
+                EmailClient = order.EmailClient,
+                Quantity = order.Quantity
             };
-
-            
         }
         public static List<OrderDto> CreateList(IEnumerable<Order> orders)
         {
