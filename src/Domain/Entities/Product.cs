@@ -17,6 +17,6 @@ namespace Domain.Entities
         [ForeignKey("SellerId")]
         public Seller Seller { get; set; }
 
-        public ICollection<Cart> Carts { get; set; } = new List<Cart>();
+      
     }
 }

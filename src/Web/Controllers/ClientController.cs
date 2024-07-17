@@ -54,8 +54,21 @@ namespace Web.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [HttpDelete("[action] / {productId}")]
+        public async Task<ActionResult> RemoveProductFromCart( int productId)
+        {
+            int clientId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? "");
+            try
+            {
+                await _cartService.RemoveProductFromCart(clientId, productId);
+                return NoContent(); 
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
 
-        
         [HttpPost("[action]")]
         public async Task<ActionResult> PurchaseCart()
         {

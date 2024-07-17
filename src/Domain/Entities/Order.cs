@@ -10,9 +10,11 @@ namespace Domain.Entities
     {
         public int Id { get; set; }
         public int ProductId { get; set; }
+        public string ProductName { get; set; } = string.Empty;
         public int ClientId { get; set; }
         public int SellerId { get; set; }   
         public DateTime DateTime { get; set; }
-        public string EmailClient { get; set; } 
+        public string EmailClient { get; set; }
+        public int Quantity { get; set; }
     }
 }

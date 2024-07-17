@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -7,11 +8,30 @@
 namespace Infrastructure.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialMigration : Migration
+    public partial class CreateCartProduct : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "Orders",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    ProductId = table.Column<int>(type: "INTEGER", nullable: false),
+                    ProductName = table.Column<string>(type: "TEXT", nullable: false),
+                    ClientId = table.Column<int>(type: "INTEGER", nullable: false),
+                    SellerId = table.Column<int>(type: "INTEGER", nullable: false),
+                    DateTime = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    EmailClient = table.Column<string>(type: "TEXT", nullable: false),
+                    Quantity = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Orders", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
@@ -71,23 +91,26 @@ namespace Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "CartProduct",
+                name: "CartProducts",
                 columns: table => new
                 {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    ProductId = table.Column<int>(type: "INTEGER", nullable: false),
                     CartId = table.Column<int>(type: "INTEGER", nullable: false),
-                    ProductId = table.Column<int>(type: "INTEGER", nullable: false)
+                    Quantity = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CartProduct", x => new { x.CartId, x.ProductId });
+                    table.PrimaryKey("PK_CartProducts", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_CartProduct_Carts_CartId",
+                        name: "FK_CartProducts_Carts_CartId",
                         column: x => x.CartId,
                         principalTable: "Carts",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_CartProduct_Products_ProductId",
+                        name: "FK_CartProducts_Products_ProductId",
                         column: x => x.ProductId,
                         principalTable: "Products",
                         principalColumn: "Id",
@@ -100,7 +123,7 @@ namespace Infrastructure.Data.Migrations
                 values: new object[,]
                 {
                     { 1, "cueton@example.com", "Cueton912", "Cueton", "Client" },
-                    { 2, "admin@example.com", "Admin123", "admin", "Admin" },
+                    { 2, "admin@example.com", "Admin123", "admin", "SysAdmin" },
                     { 3, "miguel@example.com", "Miguelito3520", "Miguel", "Seller" }
                 });
 
@@ -116,8 +139,13 @@ namespace Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_CartProduct_ProductId",
-                table: "CartProduct",
+                name: "IX_CartProducts_CartId",
+                table: "CartProducts",
+                column: "CartId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CartProducts_ProductId",
+                table: "CartProducts",
                 column: "ProductId");
 
             migrationBuilder.CreateIndex(
@@ -136,7 +164,10 @@ namespace Infrastructure.Data.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "CartProduct");
+                name: "CartProducts");
+
+            migrationBuilder.DropTable(
+                name: "Orders");
 
             migrationBuilder.DropTable(
                 name: "Carts");

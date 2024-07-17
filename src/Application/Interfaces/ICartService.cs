@@ -10,7 +10,8 @@ namespace Application.Interfaces
     public interface ICartService
     {
         Task AddProductToCart(int clientId, int productId);
-        Task<IEnumerable<ProductDto>> GetCartProducts(int clientId);
+        Task<IEnumerable<CartProductDto>> GetCartProducts(int clientId);
+        Task RemoveProductFromCart(int clientId, int productId);
         Task PurchaseCart(int clientId);
     }
 }

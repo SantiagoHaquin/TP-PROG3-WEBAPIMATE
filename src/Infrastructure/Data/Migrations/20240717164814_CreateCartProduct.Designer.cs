@@ -11,29 +11,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240712180750_CreateOrder")]
-    partial class CreateOrder
+    [Migration("20240717164814_CreateCartProduct")]
+    partial class CreateCartProduct
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.6");
-
-            modelBuilder.Entity("CartProduct", b =>
-                {
-                    b.Property<int>("CartsId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("ProductsId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("CartsId", "ProductsId");
-
-                    b.HasIndex("ProductsId");
-
-                    b.ToTable("CartProducts", (string)null);
-                });
 
             modelBuilder.Entity("Domain.Entities.Cart", b =>
                 {
@@ -50,6 +35,30 @@ namespace Infrastructure.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("Carts");
+                });
+
+            modelBuilder.Entity("Domain.Entities.CartProduct", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("CartId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CartId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("CartProducts");
                 });
 
             modelBuilder.Entity("Domain.Entities.Order", b =>
@@ -69,6 +78,13 @@ namespace Infrastructure.Data.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<int>("ProductId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ProductName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Quantity")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("SellerId")
@@ -228,21 +244,6 @@ namespace Infrastructure.Data.Migrations
                         });
                 });
 
-            modelBuilder.Entity("CartProduct", b =>
-                {
-                    b.HasOne("Domain.Entities.Cart", null)
-                        .WithMany()
-                        .HasForeignKey("CartsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Domain.Entities.Product", null)
-                        .WithMany()
-                        .HasForeignKey("ProductsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Domain.Entities.Cart", b =>
                 {
                     b.HasOne("Domain.Entities.Client", null)
@@ -250,6 +251,25 @@ namespace Infrastructure.Data.Migrations
                         .HasForeignKey("Domain.Entities.Cart", "ClientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Domain.Entities.CartProduct", b =>
+                {
+                    b.HasOne("Domain.Entities.Cart", "Cart")
+                        .WithMany("CartProducts")
+                        .HasForeignKey("CartId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Cart");
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("Domain.Entities.Product", b =>
@@ -261,6 +281,11 @@ namespace Infrastructure.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Seller");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Cart", b =>
+                {
+                    b.Navigation("CartProducts");
                 });
 
             modelBuilder.Entity("Domain.Entities.Client", b =>
