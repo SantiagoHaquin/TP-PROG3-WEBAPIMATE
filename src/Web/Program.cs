@@ -48,7 +48,6 @@ builder.Services.AddSwaggerGen(setupAction =>
 });
 
 
-
 #region Repositories
 builder.Services.AddScoped<IProductRepository, ProductRepositoryEf>();
 builder.Services.AddScoped<IUserRepository, UserRepositoryEf>();
@@ -93,7 +92,7 @@ builder.Services.AddAuthentication("Bearer") //"Bearer" es el tipo de auntentica
     }
 );
 // Configuración de políticas de autorización
-builder.Services.AddAuthorization(options => //Agregamos políticas para la autorización de los respectivos ENDPOINTS.
+builder.Services.AddAuthorization(options => 
 {
     options.AddPolicy("Admin", policy => policy.RequireClaim("usertype", "SysAdmin"));
     options.AddPolicy("Client", policy => policy.RequireClaim("usertype", "Client"));

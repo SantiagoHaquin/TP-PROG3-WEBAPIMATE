@@ -12,6 +12,7 @@ namespace Infrastructure.Data
         public DbSet<Product> Products { get; set; }
         public DbSet<Cart> Carts { get; set; }
         public DbSet<Order> Orders { get; set; }
+        public  DbSet<CartProduct> CartProducts { get; set; }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -62,10 +63,15 @@ namespace Infrastructure.Data
                 new Product { Id = 4, Name = "BOMBILLA", Price = 6500, StockAvailable = 3, Category = "Bombillas", SellerId = 3 }
             );
 
-            modelBuilder.Entity<Cart>()
-            .HasMany(c => c.Products)
-            .WithMany(p => p.Carts)
-            .UsingEntity(j => j.ToTable("CartProducts"));
+            modelBuilder.Entity<CartProduct>()
+                .HasOne(ci => ci.Cart)
+                .WithMany(c => c.CartProducts)
+                .HasForeignKey(ci => ci.CartId);
+
+            modelBuilder.Entity<CartProduct>()
+                .HasOne(ci => ci.Product)
+                .WithMany()
+                .HasForeignKey(ci => ci.ProductId);
 
             base.OnModelCreating(modelBuilder);
         }

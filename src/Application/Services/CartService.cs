@@ -39,82 +39,124 @@ namespace Application.Services
             }
 
             var clientCart = (await _cartRepository.ListAsync(
-                query => query.Include(c => c.Products)))
-                .FirstOrDefault(c => c.ClientId == clientId);
+               query => query.Include(c => c.CartProducts)
+                              .ThenInclude(p => p.Product)))
+                              .FirstOrDefault(c => c.ClientId == clientId);
 
             if (clientCart == null)
             {
                 clientCart = new Cart
                 {
                     ClientId = clientId,
-                    Products = new List<Product> { product }
+                    CartProducts = new List<CartProduct>
+                    { new CartProduct 
+                        {
+                            ProductId = productId,
+                            Quantity = 1,
+                            Product = product
+                        } 
+                    }
                 };
 
                 await _cartRepository.AddAsync(clientCart);
             }
             else
             {
-                // Verifica que el producto no esté ya en el carrito
-                if (!clientCart.Products.Any(p => p.Id == productId))
+                var existProducttoCart = clientCart.CartProducts.FirstOrDefault(clientCart => clientCart.ProductId == productId);   
+                if (existProducttoCart == null) 
                 {
-                    clientCart.Products.Add(product);
-                    await _cartRepository.UpdateAsync(clientCart);
+                    clientCart.CartProducts.Add(new CartProduct 
+                    { ProductId = productId,
+                      Quantity = 1, 
+                     Product= product 
+                    });
                 }
+                else 
+                { 
+                    existProducttoCart.Quantity++;
+                }
+                await _cartRepository.UpdateAsync(clientCart);
             }
         }
 
-        public async Task<IEnumerable<ProductDto>> GetCartProducts(int clientId)
+        public async Task<IEnumerable<CartProductDto>> GetCartProducts(int clientId)
         {
             var clientCart = (await _cartRepository.ListAsync(
-                query => query.Include(c => c.Products)))
+                query => query.Include(c => c.CartProducts)
+                .ThenInclude(p => p.Product)))
                 .FirstOrDefault(c => c.ClientId == clientId);
 
-            if (clientCart == null || !clientCart.Products.Any())
+            if (clientCart == null || !clientCart.CartProducts.Any())
             {
-                return new List<ProductDto>();
+                return new List<CartProductDto>();
+            }
+           
+            return CartProductDto.CreateList(clientCart.CartProducts);
+        }
+        public async Task RemoveProductFromCart(int clientId, int productId)
+        {
+            var clientCart = (await _cartRepository.ListAsync(
+                query => query.Include(c => c.CartProducts)))
+                .FirstOrDefault(c => c.ClientId == clientId);
+
+            if (clientCart == null)
+            {
+                throw new Exception("Cart not found.");
             }
 
-            return ProductDto.CreateList(clientCart.Products);
+            var cartItem = clientCart.CartProducts.FirstOrDefault(ci => ci.ProductId == productId);
+
+            if (cartItem == null)
+            {
+                throw new Exception("Product not found in cart.");
+            }
+
+            clientCart.CartProducts.Remove(cartItem);
+            await _cartRepository.UpdateAsync(clientCart);
         }
 
         public async Task PurchaseCart(int clientId)
         {
             var clientCart = (await _cartRepository.ListAsync(
-                query => query.Include(c => c.Products)))
+                query => query.Include(c => c.CartProducts)
+                              .ThenInclude(ci => ci.Product)))
                 .FirstOrDefault(c => c.ClientId == clientId);
 
-            if (clientCart == null || !clientCart.Products.Any())
+            if (clientCart == null || !clientCart.CartProducts.Any())
             {
                 throw new Exception("Cart is empty");
             }
 
             var client = await _userRepository.GetByIdAsync(clientId);
 
-            foreach (var product in clientCart.Products)
+            foreach (var cartItem in clientCart.CartProducts)
             {
+                var product = cartItem.Product;
                 var productToUpdate = await _productRepository.GetByIdAsync(product.Id);
 
-                if (productToUpdate.StockAvailable <= 0)
+                if (productToUpdate.StockAvailable < cartItem.Quantity)
                 {
-                    throw new Exception($"Product {productToUpdate.Name} is out of stock.");
+                    throw new Exception($"Not enough stock for product {productToUpdate.Name}. Available stock: {productToUpdate.StockAvailable}, requested: {cartItem.Quantity}");
                 }
 
-                productToUpdate.StockAvailable--;
+                productToUpdate.StockAvailable -= cartItem.Quantity;
                 await _productRepository.UpdateAsync(productToUpdate);
 
                 var order = new Order
                 {
                     ProductId = product.Id,
                     ClientId = clientId,
+                    ProductName = product.Name,
                     SellerId = product.SellerId,
                     DateTime = DateTime.UtcNow,
                     EmailClient = client.Email,
+                    Quantity = cartItem.Quantity
                 };
 
                 await _orderRepository.AddAsync(order);
             }
 
-            clientCart.Products.Clear();
+            clientCart.CartProducts.Clear();
             await _cartRepository.UpdateAsync(clientCart);
         }
     }

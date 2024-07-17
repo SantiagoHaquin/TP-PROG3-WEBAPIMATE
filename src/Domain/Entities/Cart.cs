@@ -6,6 +6,6 @@ namespace Domain.Entities
     {
         public int Id { get; set; }
         public int ClientId { get; set; }
-        public ICollection<Product> Products { get; set; } = new List<Product>();
+        public ICollection<CartProduct> CartProducts { get; set; } = new List<CartProduct>();
     }
 }
