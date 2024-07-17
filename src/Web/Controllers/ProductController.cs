@@ -99,7 +99,5 @@ namespace Web.Controllers
             var product = await _productService.GetProductById(id);
             return Ok(product);
         }
-
-        // Falta el buscador por nombre...
     }
 }
